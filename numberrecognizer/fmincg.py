@@ -65,7 +65,7 @@ from math import isnan, isinf
 def div(a, b):
     return la.solve(b.T, a.T).T
 
-def fmincg(f, X, maxiter=100):
+def fmincg(f, X, options):
     if options['maxiter']:
         length = options['maxiter']
     else:
