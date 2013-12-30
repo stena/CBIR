@@ -50,6 +50,12 @@
 # [Iago López Galeiras] Changes Made:
 # 1) Python translation
 
+# [Sten Malmlund] Changes Made:
+# 1) added option['maxiter'] passing
+# 2) changed a few np.dots to np.multiplys
+# 3) changed the conatenation line so that now it can handle one item arrays
+# 4) changed the printing part to print the Iteration lines to the same row
+
 import numpy as np
 import sys
 import numpy.linalg as la
@@ -153,7 +159,7 @@ def fmincg(f, X, maxiter=100):
         if success:                                         # if line search succeeded
             f1 = f2
             fX = np.concatenate((fX.T, [float(f1)]) ,1).T
-            print("Iteration ", i, " | Cost: ", f1)
+            print("Iteration %i | Cost: %f \r" %(i,f1)),
             s = np.dot((np.dot(df2.T,df2)-np.dot(df1.T,df2))/(np.dot(df1.T,df1)), s) - df2      # Polack-Ribiere direction
             tmp = df1
             df1 = df2
