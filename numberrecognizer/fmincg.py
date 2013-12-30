@@ -60,7 +60,10 @@ def div(a, b):
     return la.solve(b.T, a.T).T
 
 def fmincg(f, X, maxiter=100):
-    length = maxiter
+    if options['maxiter']:
+        length = options['maxiter']
+    else:
+        length = 100 
     
     RHO = 0.01                            # a bunch of constants for line searches
     SIG = 0.5       # RHO and SIG are the constants in the Wolfe-Powell conditions
@@ -88,7 +91,7 @@ def fmincg(f, X, maxiter=100):
         X = X + np.dot(z1,s)                                             # begin line search
         f2, df2 = f(X)
         i = i + (length<0)                                          # count epochs?!
-        d2 = np.dot(df2.T, s)
+        d2 = np.multiply(df2.T, s)
         f3 = f1
         d3 = d1
         z3 = -z1             # initialize point 3 equal to point 1
@@ -111,7 +114,7 @@ def fmincg(f, X, maxiter=100):
                     z2 = z3/2                  # if we had a numerical problem then bisect
                 z2 = max(min(z2, INT*z3),(1-INT)*z3)  # don't accept too close to limits
                 z1 = z1 + z2                                           # update the step
-                X = X + np.dot(z2,s)
+                X = X + np.multiply(z2,s)
                 f2, df2 = f(X)
                 M = M - 1
                 i = i + (length<0)                           # count epochs?!
@@ -142,14 +145,14 @@ def fmincg(f, X, maxiter=100):
                 z2 = (limit-z1)*(1.0-INT)
             f3 = f2; d3 = d2; z3 = -z2                  # set point 3 equal to point 2
             z1 = z1 + z2
-            X = X + np.dot(z2,s)                      # update current estimates
+            X = X + np.multiply(z2,s)                      # update current estimates
             f2, df2 = f(X)
             M = M - 1
             i = i + (length<0)                             # count epochs?!
             d2 = np.dot(df2.T,s)
         if success:                                         # if line search succeeded
             f1 = f2
-            fX = np.concatenate((fX.T, [f1]) ,1).T
+            fX = np.concatenate((fX.T, [float(f1)]) ,1).T
             print("Iteration ", i, " | Cost: ", f1)
             s = np.dot((np.dot(df2.T,df2)-np.dot(df1.T,df2))/(np.dot(df1.T,df1)), s) - df2      # Polack-Ribiere direction
             tmp = df1
@@ -175,6 +178,5 @@ def fmincg(f, X, maxiter=100):
             d1 = np.dot(-s.T,s)
             z1 = 1/(1-d1)                     
             ls_failed = 1                                    # this line search failed
-    
+    print    
     return X, fX, i
-    print()
